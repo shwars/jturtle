@@ -13,10 +13,13 @@ class Turtle:
         self.direction = 90
         self.down = True
         self.linewidth = 1
+        self.color = 'black'
         self.commands = []
 
     def __init__(self):
         self.autoinit = True
+        self.show_axes = False
+        self.keep_aspect = True
         self.init()
 
     def backward(self,x):
@@ -27,9 +30,9 @@ class Turtle:
         self.x = self.x + x * math.cos(math.radians(self.direction))
         self.y = self.y + x * math.sin(math.radians(self.direction))
         if self.down:
-            l = plt.Line2D((px, self.x), (py, self.y), lw=self.linewidth)
-            plt.gca().add_line(l)
-            self.commands.append((px,self.x,py,self.y,self.linewidth))
+            #l = plt.Line2D((px, self.x), (py, self.y), lw=self.linewidth)
+            #plt.gca().add_line(l)
+            self.commands.append((px,self.x,py,self.y,self.linewidth,self.color))
 
     def right(self, x):
         self.direction -= x
@@ -48,26 +51,54 @@ class Turtle:
             self.linewidth = line_width
         return self.linewidth
 
+    def expand_dim(self,args,prop=0.1):
+        (xmi,xma),(ymi,yma) = args
+        dx = (xma-xmi)*prop
+        dy = (yma-ymi)*prop
+        print(xmi,xma,ymi,yma,dx,dy)
+        return ((xmi-dx,xma+dx),(ymi-dy,yma+dy))
+
+    def get_dim(self):
+        xmin = min([min(x[0],x[2]) for x in self.commands])
+        xmax = max([max(x[0],x[2]) for x in self.commands])
+        ymin = min([min(x[1],x[3]) for x in self.commands])
+        ymax = max([max(x[1],x[3]) for x in self.commands])
+        if self.keep_aspect:
+            return self.expand_dim(((min(xmin,ymin),max(xmax,ymax)),(min(xmin,ymin),max(xmax,ymax))))
+        else:
+            return self.expand_dim(((xmin,xmax),(ymin,ymax)))
+
+    def draw(self,renderer=None,commands=None):
+        if renderer is None:
+            renderer = plt.gca()
+        if commands is None:
+            commands = self.commands
+        for t in commands:
+            l = plt.Line2D(t[0:2], t[2:4], t[4], color=t[5])
+            renderer.add_line(l)
+
     def show(self):
         if self.show_axes:
             plt.axis('scaled')
         else:
             plt.axis('off')
+        xdim,ydim = self.get_dim()
+        plt.gca().set_xlim(xdim)
+        plt.gca().set_ylim(ydim)
+        self.draw()
         plt.show()
         if self.autoinit:
             self.init()
 
     def show_steps(self):
         n=len(self.commands)
+        xdim,ydim = self.get_dim()
         fig,ax = plt.subplots(1,n)
-        for i,t in enumerate(self.commands):
-            l = plt.Line2D(t[0:2], t[2:4], t[4])
-            ax[i].add_line(l)
-        if self.show_axes:
-            plt.axis('scaled')
-        else:
-            plt.axis('off')
-        plt.show()
+        for i in range(n):
+            ax[i].set_xlim(xdim)
+            ax[i].set_ylim(ydim)
+            ax[i].axis('off')
+            self.draw(renderer=ax[i],commands=self.commands[0:i+1])
 
     def done(self,step_by_step=False):
         if step_by_step:
