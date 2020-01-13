@@ -49,7 +49,10 @@ class Turtle:
         return self.linewidth
 
     def show(self):
-        plt.axis('scaled')
+        if self.show_axes:
+            plt.axis('scaled')
+        else:
+            plt.axis('off')
         plt.show()
         if self.autoinit:
             self.init()
@@ -59,8 +62,11 @@ class Turtle:
         fig,ax = plt.subplots(1,n)
         for i,t in enumerate(self.commands):
             l = plt.Line2D(t[0:2], t[2:4], t[4])
-            ax[i].gca().add_line(l)
-        plt.axis('scaled')
+            ax[i].add_line(l)
+        if self.show_axes:
+            plt.axis('scaled')
+        else:
+            plt.axis('off')
         plt.show()
 
     def done(self,step_by_step=False):
