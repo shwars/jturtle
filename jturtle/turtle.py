@@ -18,6 +18,7 @@ class Turtle:
 
     def __init__(self):
         self.autoinit = True
+        self.reset_commands = True
         self.show_axes = False
         self.keep_aspect = True
         self.init()
@@ -84,6 +85,8 @@ class Turtle:
         plt.gca().set_ylim(ydim)
         self.draw()
         plt.show()
+        if self.reset_commands:
+            self.commands = []
         if self.autoinit:
             self.init()
 
@@ -97,6 +100,10 @@ class Turtle:
             ax[i].axis('off')
             ax[i].axis('scaled')
             self.draw(renderer=ax[i],commands=self.commands[0:i+1])
+        if self.reset_commands:
+            self.commands = []
+        if self.autoinit:
+            self.init()
 
     def done(self,step_by_step=False):
         if step_by_step:
