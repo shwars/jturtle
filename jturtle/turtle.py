@@ -55,7 +55,6 @@ class Turtle:
         (xmi,xma),(ymi,yma) = args
         dx = (xma-xmi)*prop
         dy = (yma-ymi)*prop
-        print(xmi,xma,ymi,yma,dx,dy)
         return ((xmi-dx,xma+dx),(ymi-dy,yma+dy))
 
     def get_dim(self):
@@ -78,10 +77,8 @@ class Turtle:
             renderer.add_line(l)
 
     def show(self):
-        if self.show_axes:
-            plt.axis('scaled')
-        else:
-            plt.axis('off')
+        plt.axis('scaled')
+        plt.axis('off')
         xdim,ydim = self.get_dim()
         plt.gca().set_xlim(xdim)
         plt.gca().set_ylim(ydim)
@@ -98,6 +95,7 @@ class Turtle:
             ax[i].set_xlim(xdim)
             ax[i].set_ylim(ydim)
             ax[i].axis('off')
+            ax[i].axis('scaled')
             self.draw(renderer=ax[i],commands=self.commands[0:i+1])
 
     def done(self,step_by_step=False):
