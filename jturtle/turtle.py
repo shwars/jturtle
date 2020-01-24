@@ -14,6 +14,7 @@ class Turtle:
         self.down = True
         self.linewidth = 1
         self.color = 'black'
+        self.pointstyle = '.'
         self.commands = []
 
     def __init__(self):
@@ -33,7 +34,7 @@ class Turtle:
         if self.down:
             #l = plt.Line2D((px, self.x), (py, self.y), lw=self.linewidth)
             #plt.gca().add_line(l)
-            self.commands.append((px,self.x,py,self.y,self.linewidth,self.color))
+            self.commands.append(('L',px,self.x,py,self.y,self.linewidth,self.color))
 
     def right(self, x):
         self.direction -= x
@@ -59,10 +60,10 @@ class Turtle:
         return ((xmi-dx,xma+dx),(ymi-dy,yma+dy))
 
     def get_dim(self):
-        xmin = min([min(x[0],x[2]) for x in self.commands])
-        xmax = max([max(x[0],x[2]) for x in self.commands])
-        ymin = min([min(x[1],x[3]) for x in self.commands])
-        ymax = max([max(x[1],x[3]) for x in self.commands])
+        xmin = min([min(x[1],x[3]) for x in self.commands])
+        xmax = max([max(x[1],x[3]) for x in self.commands])
+        ymin = min([min(x[2],x[4]) for x in self.commands])
+        ymax = max([max(x[2],x[4]) for x in self.commands])
         if self.keep_aspect:
             return self.expand_dim(((min(xmin,ymin),max(xmax,ymax)),(min(xmin,ymin),max(xmax,ymax))))
         else:
@@ -74,7 +75,12 @@ class Turtle:
         if commands is None:
             commands = self.commands
         for t in commands:
-            l = plt.Line2D(t[0:2], t[2:4], t[4], color=t[5])
+            if t[0]=='L':
+                l = plt.Line2D(t[1:3], t[3:5], t[5], color=t[6])
+            elif t[0]=='P':
+                l = plt.Line2D(t[1:3], t[3:5], t[5], color=t[6], marker=t[7])
+            else:
+                raise Exception("Unknown figure type: {}".format(t[0]))
             renderer.add_line(l)
 
     def show(self):
@@ -110,6 +116,12 @@ class Turtle:
             self.show_steps()
         else:
             self.show()
+
+    def line(self,a,b):
+        self.commands.append(('L',a[0],b[0],a[1],b[1],self.linewidth,self.color))
+
+    def point(self,p,pointstyle=None):
+        self.commands.append(('P',p[0],p[0],p[1],p[1],self.linewidth,self.color,self.pointstyle if pointstyle is None else pointstyle))
 
 defTurtle = None
 
@@ -148,3 +160,9 @@ def pensize(width=None):
 
 def init():
     ensureTurtle().init()
+
+def line(a,b):
+    ensureTurtle().line(a,b)
+
+def point(p,pointstyle=None):
+    ensureTurtle().point(p,pointstyle)
