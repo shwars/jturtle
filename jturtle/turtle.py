@@ -83,6 +83,10 @@ class Turtle:
                 raise Exception("Unknown figure type: {}".format(t[0]))
             renderer.add_line(l)
 
+    def explain(self):
+        for t in self.commands:
+            print("{}: ({},{}) -> ({},{})".format(t[0],t[1],t[2],t[3],t[4]))
+
     def show(self):
         plt.axis('scaled')
         plt.axis('off')
@@ -166,3 +170,6 @@ def line(a,b):
 
 def point(p,pointstyle=None):
     ensureTurtle().point(p,pointstyle)
+
+def explain():
+    ensureTurtle().explain()
