@@ -1,6 +1,6 @@
 # jturtle - Simple Turtle Library to be used
 # in Jupyter Notebooks
-# (c) 2018-20 Dmitri Soshnikov, http://twitter.com/shwars
+# (c) 2018-24 Dmitri Soshnikov, http://twitter.com/shwars
 
 import matplotlib.pyplot as plt
 import math
@@ -76,9 +76,9 @@ class Turtle:
             commands = self.commands
         for t in commands:
             if t[0]=='L':
-                l = plt.Line2D(t[1:3], t[3:5], t[5], color=t[6])
+                l = plt.Line2D(t[1:3], t[3:5], lw=t[5], color=t[6])
             elif t[0]=='P':
-                l = plt.Line2D(t[1:3], t[3:5], t[5], color=t[6], marker=t[7])
+                l = plt.Line2D(t[1:3], t[3:5], lw=t[5], color=t[6], marker=t[7])
             else:
                 raise Exception("Unknown figure type: {}".format(t[0]))
             renderer.add_line(l)
